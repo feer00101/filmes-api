@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 
-import br.nilo.screenOn.service.ConsultaGpt;
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "series")
@@ -23,7 +23,6 @@ public class Serie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String title;
 
     private Integer totalSeasons;
@@ -39,7 +38,7 @@ public class Serie {
 
     private String sinopse;
 
-    @Transient
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episode> episodios = new ArrayList<>();
 
     public Serie() {
@@ -47,6 +46,7 @@ public class Serie {
     }
 
     public Serie(DataSeries dataSeries) {
+
         this.title = dataSeries.title();
         this.totalSeasons = dataSeries.totalSeasons();
         this.rating = OptionalDouble.of(Double.valueOf(dataSeries.rating())).orElse(0);
@@ -58,6 +58,10 @@ public class Serie {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -116,10 +120,20 @@ public class Serie {
         this.sinopse = sinopse;
     }
 
+    public List<Episode> getEpisodes() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episode> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
+
+    }
+
     @Override
     public String toString() {
         return "| Title=" + title + "| TotalSeasons=" + totalSeasons + "| Rating= " + rating + "| Genero= " + genero
-                + "Atores= " + atores + "| Poster= " + poster + "| Sinopse= " + sinopse + System.lineSeparator();
+                + "Atores= " + atores + "| Poster= " + poster + "| Sinopse= " + sinopse + "Episodios" + episodios + System.lineSeparator();
     }
 
 }

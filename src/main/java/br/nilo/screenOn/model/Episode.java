@@ -3,14 +3,33 @@ package br.nilo.screenOn.model;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "episodios")
 public class Episode {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Integer season;
     private String title;
     private Integer numeroEpisode;
 
     private Double rating;
     private LocalDate dataLancamento;
+
+    @ManyToOne
+    private Serie serie;
+
+    public Episode() {
+
+    }
 
     public Episode(Integer numeroSeason, DataEpisiode dataEpisiode) {
         this.season = numeroSeason;
@@ -27,6 +46,22 @@ public class Episode {
             this.dataLancamento = null;
         }
 
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Serie getSerie() {
+        return serie;
+    }
+
+    public void setSerie(Serie serie) {
+        this.serie = serie;
     }
 
     public Integer getSeason() {
